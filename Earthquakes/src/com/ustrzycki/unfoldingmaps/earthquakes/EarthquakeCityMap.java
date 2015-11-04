@@ -1,7 +1,19 @@
-package com.ustrzycki.ufoldingmaps.week4module5;
+package com.ustrzycki.unfoldingmaps.earthquakes;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -52,6 +64,8 @@ public class EarthquakeCityMap extends PApplet {
 	private String cityFile = "city-data.json";
 	private String countryFile = "countries.geo.json";
 	
+	
+	
 	// The map
 	private UnfoldingMap map;
 	
@@ -63,19 +77,26 @@ public class EarthquakeCityMap extends PApplet {
 	// A List of country markers
 	private List<Marker> countryMarkers;
 	
+	// user's location
+	private CustomLocationMarker userLocationMarker;
+	private enum Mode {DEFAULT, CUSTOM_LOCATION, HISTORICAL};
+	private Mode mapMode = Mode.DEFAULT;
+	
 	// NEW IN MODULE 5
 	private CommonMarker lastSelected;
 	private CommonMarker lastClicked;
+	
+
 	
 	public void setup() {		
 		// (1) Initializing canvas and map tiles
 		size(900, 700, OPENGL);
 		if (offline) {
-		    map = new UnfoldingMap(this, 200, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
+		    map = new UnfoldingMap(this, 100, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
 		    earthquakesURL = "2.5_week.atom";  // The same feed, but saved August 7, 2015
 		}
 		else {
-			map = new UnfoldingMap(this, 200, 50, 650, 600, new Google.GoogleMapProvider());
+			map = new UnfoldingMap(this, 178, 50, 650, 600, new Google.GoogleMapProvider());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
 		    //earthquakesURL = "2.5_week.atom";
 		}
@@ -86,6 +107,8 @@ public class EarthquakeCityMap extends PApplet {
 	    //     STEP 1: load country features and markers
 		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
 		countryMarkers = MapUtils.createSimpleMarkers(countries);
+		
+		//earthquakesURL = "quiz2.atom";
 		
 		//     STEP 2: read in city data
 		List<Feature> cities = GeoJSONReader.loadData(this, cityFile);
@@ -116,8 +139,13 @@ public class EarthquakeCityMap extends PApplet {
 	    //     NOTE: Country markers are not added to the map.  They are used
 	    //           for their geometric properties
 	    
+	    //
+	    
 	    map.addMarkers(quakeMarkers);
 	    map.addMarkers(cityMarkers);
+	   
+	    
+	    sortAndPrint(100);
 	    
 	}  // End setup
 	
@@ -126,12 +154,41 @@ public class EarthquakeCityMap extends PApplet {
 		background(0);
 		map.draw();
 		addKey();
-		
-		assert ( howManySelectedQuakes() == 1 || howManySelectedQuakes() ==0 ) &&
-		( howManySelectedCities() == 1 || howManySelectedCities() ==0 )
-		: "selected quakes: " + howManySelectedQuakes() + "selected cities: " + howManySelectedCities();
-		
+		addNearestQuakeMenu("Click this button to", "set your location and", "see the nearest quake" );
 	}
+	
+	private void sortAndPrint(int numToPrint){
+		
+		System.out.println("The largest eartquakes by sortAndPrint method: ");
+		
+		//Collections.sort((Marker)quakeMarkers);
+		
+		// 1. creates a new array from the list of earthquake markers
+		Object[] arr =  quakeMarkers.toArray(); // returns the elements in the List as an array of Objects
+		
+		 //2. sort the array of earthquake markers in reverse order of their magnitude (highest to lowest)
+		// sort in the natural ordering
+		 Arrays.sort(arr);
+		
+		//convert the array back into a list
+		 List<Object> newQuakesList =  Arrays.asList(arr);
+		 //reverse the list
+		 Collections.reverse(newQuakesList);
+		 
+		 // print out the top numToPrint earthquakes 
+		 // if number of quakes is smaller than numToPrint, just print all the earthquakes	
+		 
+		 int counter = 1;
+		 for(Object quake : newQuakesList){
+			 
+			 if( counter <= numToPrint)
+				 System.out.println(((EarthquakeMarker)quake).getTitle());
+			 
+			 counter++;
+		 }		
+	}
+	
+
 	
 	/** Event handler that gets called automatically when the 
 	 * mouse moves.
@@ -171,6 +228,35 @@ public class EarthquakeCityMap extends PApplet {
 		}
 	}
 	
+	private boolean clickOnCusLocButton(){
+		
+		boolean isInsideButton = false;
+		
+		if (mouseX > 80 && mouseX < 115 && mouseY > 370 && mouseY < 405){
+			
+			//System.out.println("mouseX: " + mouseX + "mouseY: " + mouseY );
+			isInsideButton = true;
+		}
+		else
+			isInsideButton = false;
+		
+		System.out.println("isInsideButton: " + isInsideButton);
+		
+		
+		return isInsideButton;
+	}
+	
+	private void showOnlyOneMarker(Marker markerToShow, ScreenPosition position ){
+		
+		hideMarkers();		
+		
+		Location loc = map.getLocation(position);
+		markerToShow.setLocation(loc);
+		markerToShow.setHidden(false);
+		map.addMarker(userLocationMarker);
+		
+	}
+	
 	/** The event handler for mouse clicks
 	 * It will display an earthquake and its threat circle of cities
 	 * Or if a city is clicked, it will display all the earthquakes 
@@ -179,7 +265,7 @@ public class EarthquakeCityMap extends PApplet {
 	@Override
 	public void mouseClicked()
 	{					
-		System.out.println("CLICK!!!");
+		System.out.println("\nCLICK!!!");
 		
 		boolean foundNewSelection = false;
 		
@@ -189,10 +275,7 @@ public class EarthquakeCityMap extends PApplet {
 		
 			if (!foundNewSelection)
 				foundNewSelection = checkMarkersForClick(quakeMarkers);
-		}
-		
-		/*System.out.println("foundNewSelection: " + foundNewSelection);
-		System.out.println("lastClicked: " + lastClicked);*/
+		}		
 		
 		if(foundNewSelection){
 			hideMarkers();			
@@ -200,16 +283,55 @@ public class EarthquakeCityMap extends PApplet {
 		else {
 			
 			if(lastClicked != null){
-				unhideMarkers(); 
+				unhideAllMarkers(); 
 				// after unhiding remove clickSelection from the marker and from the lastClicked
 				lastClicked.setClicked(false);
 				lastClicked = null;
 			}
 		}
 		
+		/////////////////////////// SELECT CUSTOM LOCATION IF THE APPROPRIATE BUTTON IS CLICKED/////////////////////
 		
-				
+		if(clickOnCusLocButton() && (mapMode != Mode.CUSTOM_LOCATION)){
+														System.out.println("Setting CUSTOM_LOCATION");
+														System.out.println("Calling nearestQuake() method 1st time");
+			mapMode = mapMode.CUSTOM_LOCATION;
+			quakeNearCustomLocation();
+			
+		} else if (mapMode == Mode.CUSTOM_LOCATION && !clickOnCusLocButton()){
+														System.out.println("Calling nearestQuake() method again");
+			quakeNearCustomLocation();
+		} 
+		
+		
 	}
+	
+	private void quakeNearCustomLocation(){
+		
+		// if click inside button and custom marker is null, intilize custom marker 
+				if (userLocationMarker == null){
+													System.out.println("Initializing userLocationMarker");
+					userLocationMarker = new CustomLocationMarker(new Location(0,0));
+					lastClicked = userLocationMarker;
+				}
+				else {
+						 // if click in NOT inside the button and marker is not visible, show it on the map hiding other markers
+						if (userLocationMarker.isHidden()){
+															System.out.println("Showing the marker");
+							showOnlyOneMarker(userLocationMarker, new ScreenPosition(mouseX, mouseY) );
+							
+							distanceToCustomLocation(userLocationMarker);
+						}		
+						else {												
+							unhideAllMarkers();
+							userLocationMarker = null;	
+							mapMode = Mode.DEFAULT;
+															System.out.println("Exiting Mode.CUSTOM_LOCATION");
+						} 
+				}
+	}
+	
+	
 	
 
 	 
@@ -253,7 +375,7 @@ public class EarthquakeCityMap extends PApplet {
 	
 	
 	// loop over and unhide all markers
-	private void unhideMarkers() {
+	private void unhideAllMarkers() {
 		for(Marker marker : quakeMarkers) {
 			marker.setHidden(false);
 		}
@@ -261,6 +383,9 @@ public class EarthquakeCityMap extends PApplet {
 		for(Marker marker : cityMarkers) {
 			marker.setHidden(false);
 		}
+		
+		if (userLocationMarker != null)
+			userLocationMarker.setHidden(true);
 	}
 	
 	private void hideMarkers(){
@@ -334,10 +459,6 @@ public class EarthquakeCityMap extends PApplet {
 	private double distanceToClickedMarker(Marker marker){		
 		return marker.getDistanceTo(lastClicked.getLocation()); 		
 	}
-	
-	
-	
-	
 	
 	// helper method to draw key in GUI
 	private void addKey() {	
@@ -481,40 +602,93 @@ public class EarthquakeCityMap extends PApplet {
 		return false;
 	}
 	
-	//TODO: remove the following 3 methods
 	
-	private int howManySelectedQuakes(){
+	
+	private void distanceToCustomLocation(Marker customMarker){
 		
-		int c = 0;
+		List<Entry<String, Float>> linkedList = new LinkedList<Entry<String, Float>>();
 		
-		for( Marker quake : quakeMarkers )
-		{
-			if(quake.isSelected())
-				c++;			
+		float smallestDistance = (float)quakeMarkers.get(0).getDistanceTo(customMarker.getLocation());
+		Marker nearestEarthquake = null;
+		
+		for(Marker quake : quakeMarkers){
+			
+			String title = quake.getProperty("title").toString();
+			float distance = (float)quake.getDistanceTo(customMarker.getLocation());	
+			Map.Entry<String, Float> entry = new AbstractMap.SimpleEntry<String, Float>(title, distance);
+			linkedList.add(entry); 
+				
+			if(distance < smallestDistance){
+				smallestDistance = distance;
+				nearestEarthquake = quake;
+			}
 		}
-		//System.out.println("Selected quakes: " + c);	
 		
-		return c;
-	}
-	
-	private int howManySelectedCities(){
+		System.out.println("smallestDistance " + smallestDistance + 
+				"nearestEarthquake: " + nearestEarthquake.getProperty("title").toString());
 		
-		int c = 0;
+		// sort the list defining in a Comparator class how to compare the distances
+				Collections.sort(linkedList, new Comparator<Entry<String, Float>>(){
+					
+					public int compare(Entry<String, Float> o1, Entry<String, Float> o2){
+						
+						return o1.getValue().compareTo(o2.getValue());
+					}
+				});
 		
-		for( Marker city : cityMarkers )
-		{
-			if(city.isSelected())
-				c++;			
+		
+		System.out.println("\n\n\n The earthquakes nearest to your custom location: \n");
+		for(Entry<String, Float> entry : linkedList){
+			
+			String key = entry.getKey();
+			Float value = entry.getValue(); 
+			System.out.printf("%5.0f km   %s%n", value, key);
 		}
-		//System.out.println("Selected cities: " + c);
 		
-		return c;
-	}
+		showNearestQuakeOnMap(nearestEarthquake);
+ 	}
 	
-	private int howManySelectedTotal(){
-		return howManySelectedQuakes() + howManySelectedCities();		
+	private void showNearestQuakeOnMap(Marker quake){
+		quake.setHidden(false);
 	}
-	private UnfoldingMap getMap(){
-		return map;
+
+
+	private void addNearestQuakeMenu(String text1, String text2, String text3) {
+		
+		int xbase = 25;
+		int ybase = 300;
+		
+		
+		
+		if(mapMode == Mode.DEFAULT){
+			
+			fill(255, 250, 240);
+			rect(xbase, ybase, 150, 120);
+			
+			fill(0);
+			textAlign(LEFT, CENTER);
+			textSize(12);
+			text(text1, xbase+8, ybase+18);
+			text(text2, xbase+8, ybase+32);
+			text(text3, xbase+8, ybase+46);
+			
+			fill(CommonMarker.ORANGE);
+			rect(xbase+55, ybase+70, 35, 35);			
+		}
+		else if (mapMode == Mode.CUSTOM_LOCATION){
+			
+			fill(CommonMarker.ORANGE);
+			rect(xbase, ybase, 150, 120);
+			
+			fill(0);
+			textAlign(LEFT, CENTER);
+			textSize(12);
+			text("Now click on the map.", xbase+8, ybase+18);
+			text("Then click again to", xbase+8, ybase+52);
+			text("return to the default", xbase+8, ybase+66);
+			
+		}
+		
+		
 	}
 }

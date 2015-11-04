@@ -1,4 +1,4 @@
-package com.ustrzycki.unfoldingmaps.week5ownextension;
+package com.ustrzycki.unfoldingmaps.earthquakes;
 
 import de.fhpotsdam.unfolding.geo.Location;
 import processing.core.PApplet;

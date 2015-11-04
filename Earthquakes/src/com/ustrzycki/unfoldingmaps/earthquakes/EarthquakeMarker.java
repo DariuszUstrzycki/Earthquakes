@@ -1,17 +1,24 @@
-package module6;
+package com.ustrzycki.unfoldingmaps.earthquakes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.PointFeature;
-import processing.core.PConstants;
 import processing.core.PGraphics;
 
 /** Implements a visual marker for earthquakes on an earthquake map
  * 
  * @author UC San Diego Intermediate Software Development MOOC team
+ * @author Your name here
  *
  */
-// TODO: Implement the comparable interface
-public abstract class EarthquakeMarker extends CommonMarker
+//TODO: Implement the comparable interface
+public abstract class EarthquakeMarker extends CommonMarker implements Comparable<EarthquakeMarker>
 {
+	
+	protected List<CityMarker> threatenedCities = new ArrayList<CityMarker>();
+	protected UnfoldingMap markersMap;
 	
 	// Did the earthquake occur on land?  This will be set by the subclasses.
 	protected boolean isOnLand;
@@ -21,7 +28,6 @@ public abstract class EarthquakeMarker extends CommonMarker
 	// using the thresholds below, or a continuous function
 	// based on magnitude. 
 	protected float radius;
-	
 	
 	// constants for distance
 	protected static final float kmPerMile = 1.6f;
@@ -36,7 +42,7 @@ public abstract class EarthquakeMarker extends CommonMarker
 	/** Greater than or equal to this threshold is a deep depth */
 	public static final float THRESHOLD_DEEP = 300;
 
-	// ADD constants for colors
+	// ADD constants for colors if you want
 
 	
 	// abstract method implemented in derived classes
@@ -52,13 +58,20 @@ public abstract class EarthquakeMarker extends CommonMarker
 		float magnitude = Float.parseFloat(properties.get("magnitude").toString());
 		properties.put("radius", 2*magnitude );
 		setProperties(properties);
-		this.radius = 1.75f*getMagnitude();
+		this.radius = 1.75f*getMagnitude(); 
 	}
 	
-	// TODO: Add the method:
-	// public int compareTo(EarthquakeMarker marker)
 	
-	
+	 public int compareTo(EarthquakeMarker marker){
+		 
+		 if (this.getMagnitude() < marker.getMagnitude())
+			 return -1;
+		 else if (this.getMagnitude() > marker.getMagnitude())
+			 return 1;
+		 else 		 
+			 return 0;
+	 }
+
 	// calls abstract method drawEarthquake and then checks age and draws X if needed
 	@Override
 	public void drawMarker(PGraphics pg, float x, float y) {
@@ -94,24 +107,19 @@ public abstract class EarthquakeMarker extends CommonMarker
 	}
 
 	/** Show the title of the earthquake if this marker is selected */
+	@Override
 	public void showTitle(PGraphics pg, float x, float y)
 	{
-		String title = getTitle();
-		pg.pushStyle();
+		String s = getStringProperty("title");
+		int length = s.length();
 		
-		pg.rectMode(PConstants.CORNER);
+		pg.fill(TITLE_BOX_YELLOW);
+		pg.rect(x, y + 20, length*7 - 10, 15);
 		
-		pg.stroke(110);
-		pg.fill(255,255,255);
-		pg.rect(x, y + 15, pg.textWidth(title) +6, 18, 5);
-		
-		pg.textAlign(PConstants.LEFT, PConstants.TOP);
-		pg.fill(0);
-		pg.text(title, x + 3 , y +18);
-		
-		
-		pg.popStyle();
-		
+		pg.fill(RED);
+		pg.textAlign(PGraphics.LEFT, PGraphics.CENTER);
+		pg.textSize(12);
+		pg.text(s, x + 2, y + 20 + 6);
 	}
 
 	
@@ -145,14 +153,9 @@ public abstract class EarthquakeMarker extends CommonMarker
 	}
 	
 	
-	/** toString
-	 * Returns an earthquake marker's string representation
-	 * @return the string representation of an earthquake marker.
-	 */
-	public String toString()
-	{
-		return getTitle();
-	}
+	
+	
+	
 	/*
 	 * getters for earthquake properties
 	 */
@@ -177,6 +180,21 @@ public abstract class EarthquakeMarker extends CommonMarker
 	public boolean isOnLand()
 	{
 		return isOnLand;
+	}
+	
+	
+	public void addThreatenedCity(CityMarker marker){
+		
+		threatenedCities.add(marker);
+		
+	}
+	
+	public void setMarkersMap(UnfoldingMap map){
+		markersMap = map;
+	}
+	
+	public UnfoldingMap getMarkersMap(){
+		return markersMap;
 	}
 	
 

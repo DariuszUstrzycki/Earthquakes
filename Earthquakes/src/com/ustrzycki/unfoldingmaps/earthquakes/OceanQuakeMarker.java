@@ -1,4 +1,4 @@
-package com.ustrzycki.ufoldingmaps.week5module6;
+package com.ustrzycki.unfoldingmaps.earthquakes;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;

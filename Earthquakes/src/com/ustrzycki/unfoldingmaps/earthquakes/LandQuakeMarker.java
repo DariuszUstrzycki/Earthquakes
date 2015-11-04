@@ -1,4 +1,4 @@
-package module5;
+package com.ustrzycki.unfoldingmaps.earthquakes;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
