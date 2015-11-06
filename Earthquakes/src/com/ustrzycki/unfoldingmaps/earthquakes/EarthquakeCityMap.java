@@ -37,7 +37,7 @@ import processing.core.PApplet;
  * Date: July 17, 2015
  * */
 /**
- * @author a
+ * @author DariuszUstrzycki
  *
  */
 public class EarthquakeCityMap extends PApplet {
