@@ -48,7 +48,7 @@ public class EarthquakeCityMap extends PApplet {
 	// code to modify is countryQuakes, where you will store the number of earthquakes
 	// per country.
 	
-	// You can ignore this.  It's to get rid of eclipse warnings
+	// You can ignore this -  It's to get rid of eclipse warnings
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
