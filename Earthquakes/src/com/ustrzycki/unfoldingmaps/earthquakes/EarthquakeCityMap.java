@@ -60,21 +60,16 @@ public class EarthquakeCityMap extends PApplet {
 	//feed with magnitude 2.5+ Earthquakes
 	private String earthquakesURL = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.atom";
 	
-	// The files containing city names and info and country names and info
+	// The files containing city and country names with appropriate info
 	private String cityFile = "city-data.json";
 	private String countryFile = "countries.geo.json";
-	
-	
 	
 	// The map
 	private UnfoldingMap map;
 	
-	// Markers for each city
+	// Markers for each city, earthquake and country
 	private List<Marker> cityMarkers;
-	// Markers for each earthquake
 	private List<Marker> quakeMarkers;
-
-	// A List of country markers
 	private List<Marker> countryMarkers;
 	
 	// user's location
