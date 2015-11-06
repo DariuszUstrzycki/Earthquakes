@@ -5,15 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -27,26 +22,19 @@ import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
+
 import parsing.ParseFeed;
 import processing.core.PApplet;
 
 /** EarthquakeCityMap
  * An application with an interactive map displaying earthquake data.
  * Author: UC San Diego Intermediate Software Development MOOC team
- * @author Your name here
- * Date: July 17, 2015
+ * @author  DariuszUstrzycki
+ * Date: October, 2015
  * */
-/**
- * @author DariuszUstrzycki
- *
- */
-public class EarthquakeCityMap extends PApplet {
+
+public class EarthquakeCityMap extends PApplet { 
 	
-	// We will use member variables, instead of local variables, to store the data
-	// that the setup and draw methods will need to access (as well as other methods)
-	// You will use many of these variables, but the only one you should need to add
-	// code to modify is countryQuakes, where you will store the number of earthquakes
-	// per country.
 	
 	// You can ignore this -  It's to get rid of eclipse warnings
 	private static final long serialVersionUID = 1L;
@@ -64,7 +52,7 @@ public class EarthquakeCityMap extends PApplet {
 	private String cityFile = "city-data.json";
 	private String countryFile = "countries.geo.json";
 	
-	// The map
+	// The map of the world
 	private UnfoldingMap map;
 	
 	// Markers for each city, earthquake and country
@@ -77,7 +65,6 @@ public class EarthquakeCityMap extends PApplet {
 	private enum Mode {DEFAULT, CUSTOM_LOCATION, HISTORICAL};
 	private Mode mapMode = Mode.DEFAULT;
 	
-	// NEW IN MODULE 5
 	private CommonMarker lastSelected;
 	private CommonMarker lastClicked;
 	
@@ -92,18 +79,15 @@ public class EarthquakeCityMap extends PApplet {
 		}
 		else {
 			map = new UnfoldingMap(this, 178, 50, 650, 600, new Google.GoogleMapProvider());
-			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
-		    //earthquakesURL = "2.5_week.atom";
 		}
-		MapUtils.createDefaultEventDispatcher(this, map);
+		
+		MapUtils.createDefaultEventDispatcher(this, map); // creates an event handler
 		
 		
 		// (2) Reading in earthquake data and geometric properties
 	    //     STEP 1: load country features and markers
 		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
 		countryMarkers = MapUtils.createSimpleMarkers(countries);
-		
-		//earthquakesURL = "quiz2.atom";
 		
 		//     STEP 2: read in city data
 		List<Feature> cities = GeoJSONReader.loadData(this, cityFile);
@@ -128,17 +112,14 @@ public class EarthquakeCityMap extends PApplet {
 	    }
 
 	    // could be used for debugging
-	    printQuakes();
+	   printQuakes();
 	 		
 	    // (3) Add markers to map
 	    //     NOTE: Country markers are not added to the map.  They are used
 	    //           for their geometric properties
 	    
-	    //
-	    
 	    map.addMarkers(quakeMarkers);
 	    map.addMarkers(cityMarkers);
-	   
 	    
 	    sortAndPrint(100);
 	    
@@ -155,8 +136,6 @@ public class EarthquakeCityMap extends PApplet {
 	private void sortAndPrint(int numToPrint){
 		
 		System.out.println("The largest eartquakes by sortAndPrint method: ");
-		
-		//Collections.sort((Marker)quakeMarkers);
 		
 		// 1. creates a new array from the list of earthquake markers
 		Object[] arr =  quakeMarkers.toArray(); // returns the elements in the List as an array of Objects
@@ -327,9 +306,6 @@ public class EarthquakeCityMap extends PApplet {
 	}
 	
 	
-	
-
-	 
 	private boolean checkMarkersForClick(List<Marker>  markers){
 		
 		for(Marker marker : markers ){
@@ -431,18 +407,6 @@ public class EarthquakeCityMap extends PApplet {
 		}
 	}
 	
-			
-			
-			/*//System.out.println(lastClicked.getDistanceTo(Location loc));
-			System.out.println("threatCircle: " + ((OceanQuakeMarker) lastClicked).threatCircle());
-			System.out.println("getScreenPosition: " + lastClicked.getScreenPosition(map));
-			System.out.println("getLocation: " + lastClicked.getLocation());
-			System.out.println("lastClicked: " + lastClicked.getProperties());
-			//System.out.println( lastClicked.drawMarker(pg, x, y););
-			//System.out.println( ((OceanQuakeMarker) lastClicked).drawEarthquake(pg, x, y););
-		}
-	}*/
-		
 	private double threatCircleRadius(EarthquakeMarker marker){
 		return marker.threatCircle();
 	}	
@@ -457,7 +421,7 @@ public class EarthquakeCityMap extends PApplet {
 	
 	// helper method to draw key in GUI
 	private void addKey() {	
-		// Remember you can use Processing's graphics methods here
+		//  you can use Processing's graphics methods here
 		fill(255, 250, 240);
 		
 		int xbase = 25;
@@ -517,8 +481,6 @@ public class EarthquakeCityMap extends PApplet {
 		line(centerx-8, centery+8, centerx+8, centery-8);
 			
 	}
-
-	
 	
 	// Checks whether this quake occurred on land.  If it did, it sets the 
 	// "country" property of its PointFeature to the country where it occurred
@@ -597,8 +559,6 @@ public class EarthquakeCityMap extends PApplet {
 		return false;
 	}
 	
-	
-	
 	private void distanceToCustomLocation(Marker customMarker){
 		
 		List<Entry<String, Float>> linkedList = new LinkedList<Entry<String, Float>>();
@@ -653,8 +613,6 @@ public class EarthquakeCityMap extends PApplet {
 		int xbase = 25;
 		int ybase = 300;
 		
-		
-		
 		if(mapMode == Mode.DEFAULT){
 			
 			fill(255, 250, 240);
@@ -686,4 +644,14 @@ public class EarthquakeCityMap extends PApplet {
 		
 		
 	}
+	
+	/*//System.out.println(lastClicked.getDistanceTo(Location loc));
+	System.out.println("threatCircle: " + ((OceanQuakeMarker) lastClicked).threatCircle());
+	System.out.println("getScreenPosition: " + lastClicked.getScreenPosition(map));
+	System.out.println("getLocation: " + lastClicked.getLocation());
+	System.out.println("lastClicked: " + lastClicked.getProperties());
+	//System.out.println( lastClicked.drawMarker(pg, x, y););
+	//System.out.println( ((OceanQuakeMarker) lastClicked).drawEarthquake(pg, x, y););
+}
+}*/
 }
