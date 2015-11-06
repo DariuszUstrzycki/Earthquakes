@@ -64,7 +64,7 @@ public class EarthquakeCityMap extends PApplet {
 	private String cityFile = "city-data.json";
 	private String countryFile = "countries.geo.json";
 	
-	// The map
+	// The map of the world
 	private UnfoldingMap map;
 	
 	// Markers for each city, earthquake and country
