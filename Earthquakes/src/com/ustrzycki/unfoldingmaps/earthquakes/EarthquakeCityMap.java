@@ -75,6 +75,7 @@ public class EarthquakeCityMap extends PApplet {
 	private CommonMarker lastSelected;
 	private CommonMarker lastClicked;
 
+	@Override
 	public void setup() {
 		// (1) Initializing canvas and map tiles
 		size(900, 700, OPENGL);
@@ -130,6 +131,7 @@ public class EarthquakeCityMap extends PApplet {
 
 	} // End setup
 
+	@Override
 	public void draw() {
 		background(0);
 		map.draw();
@@ -276,7 +278,7 @@ public class EarthquakeCityMap extends PApplet {
 		if (clickOnCusLocButton() && (mapMode != Mode.CUSTOM_LOCATION)) {
 			System.out.println("Setting CUSTOM_LOCATION");
 			System.out.println("Calling nearestQuake() method 1st time");
-			mapMode = mapMode.CUSTOM_LOCATION;
+			mapMode = Mode.CUSTOM_LOCATION;
 			quakeNearCustomLocation();
 
 		} else if (mapMode == Mode.CUSTOM_LOCATION && !clickOnCusLocButton()) {
@@ -590,6 +592,7 @@ public class EarthquakeCityMap extends PApplet {
 		// distances
 		Collections.sort(linkedList, new Comparator<Entry<String, Float>>() {
 
+			@Override
 			public int compare(Entry<String, Float> o1, Entry<String, Float> o2) {
 
 				return o1.getValue().compareTo(o2.getValue());
