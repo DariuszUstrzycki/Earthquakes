@@ -70,60 +70,60 @@ public class EarthquakeCityMap extends PApplet {
 	
 
 	
-	public void setup() {		
+	public void setup() {
 		// (1) Initializing canvas and map tiles
 		size(900, 700, OPENGL);
 		if (offline) {
-		    map = new UnfoldingMap(this, 100, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
-		    earthquakesURL = "2.5_week.atom";  // The same feed, but saved August 7, 2015
-		}
-		else {
+			map = new UnfoldingMap(this, 100, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
+			earthquakesURL = "2.5_week.atom"; // The same feed, but saved August
+												// 7, 2015
+		} else {
 			map = new UnfoldingMap(this, 178, 50, 650, 600, new Google.GoogleMapProvider());
 		}
-		
-		MapUtils.createDefaultEventDispatcher(this, map); // creates an event handler
-		
-		
+
+		MapUtils.createDefaultEventDispatcher(this, map); // creates an event
+															// handler
+
 		// (2) Reading in earthquake data and geometric properties
-	    //     STEP 1: load country features and markers
+		// STEP 1: load country features and markers
 		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
 		countryMarkers = MapUtils.createSimpleMarkers(countries);
-		
-		//     STEP 2: read in city data
+
+		// STEP 2: read in city data
 		List<Feature> cities = GeoJSONReader.loadData(this, cityFile);
 		cityMarkers = new ArrayList<Marker>();
-		for(Feature city : cities) {
-		  cityMarkers.add(new CityMarker(city));
+		for (Feature city : cities) {
+			cityMarkers.add(new CityMarker(city));
 		}
-	    
-		//     STEP 3: read in earthquake RSS feed
-	    List<PointFeature> earthquakes = ParseFeed.parseEarthquake(this, earthquakesURL);
-	    quakeMarkers = new ArrayList<Marker>();
-	    
-	    for(PointFeature feature : earthquakes) {
-		  //check if LandQuake
-		  if(isLand(feature)) {
-		    quakeMarkers.add(new LandQuakeMarker(feature));
-		  }
-		  // OceanQuakes
-		  else {
-		    quakeMarkers.add(new OceanQuakeMarker(feature));
-		  }
-	    }
 
-	    // could be used for debugging
-	   printQuakes();
-	 		
-	    // (3) Add markers to map
-	    //     NOTE: Country markers are not added to the map.  They are used
-	    //           for their geometric properties
-	    
-	    map.addMarkers(quakeMarkers);
-	    map.addMarkers(cityMarkers);
-	    
-	    sortAndPrint(100);
-	    
-	}  // End setup
+		// STEP 3: read in earthquake RSS feed
+		List<PointFeature> earthquakes = ParseFeed.parseEarthquake(this, earthquakesURL);
+		quakeMarkers = new ArrayList<Marker>();
+
+		for (PointFeature feature : earthquakes) {
+			// check if LandQuake
+			if (isLand(feature)) {
+				quakeMarkers.add(new LandQuakeMarker(feature));
+			}
+			// OceanQuakes
+			else {
+				quakeMarkers.add(new OceanQuakeMarker(feature));
+			}
+		}
+
+		// could be used for debugging
+		printQuakes();
+
+		// (3) Add markers to map
+		// NOTE: Country markers are not added to the map. They are used
+		// for their geometric properties
+
+		map.addMarkers(quakeMarkers);
+		map.addMarkers(cityMarkers);
+
+		sortAndPrint(100);
+
+	} // End setup
 	
 	
 	public void draw() {
