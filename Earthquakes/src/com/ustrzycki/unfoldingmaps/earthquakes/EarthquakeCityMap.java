@@ -75,14 +75,12 @@ public class EarthquakeCityMap extends PApplet {
 		size(900, 700, OPENGL);
 		if (offline) {
 			map = new UnfoldingMap(this, 100, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
-			earthquakesURL = "2.5_week.atom"; // The same feed, but saved August
-												// 7, 2015
+			earthquakesURL = "2.5_week.atom"; // The same feed, but saved August 7, 2015
 		} else {
 			map = new UnfoldingMap(this, 178, 50, 650, 600, new Google.GoogleMapProvider());
 		}
 
-		MapUtils.createDefaultEventDispatcher(this, map); // creates an event
-															// handler
+		MapUtils.createDefaultEventDispatcher(this, map); // creates an event handler
 
 		// (2) Reading in earthquake data and geometric properties
 		// STEP 1: load country features and markers
@@ -92,7 +90,7 @@ public class EarthquakeCityMap extends PApplet {
 		// STEP 2: read in city data
 		List<Feature> cities = GeoJSONReader.loadData(this, cityFile);
 		cityMarkers = new ArrayList<Marker>();
-		for (Feature city : cities) {
+		for(Feature city : cities) {
 			cityMarkers.add(new CityMarker(city));
 		}
 
