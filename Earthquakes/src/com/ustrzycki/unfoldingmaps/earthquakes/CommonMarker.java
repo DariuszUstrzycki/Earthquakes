@@ -48,6 +48,7 @@ public abstract class CommonMarker extends SimplePointMarker {
 	// Note that you should implement this by making calls 
 	// drawMarker and showTitle, which are abstract methods 
 	// implemented in subclasses
+	@Override
 	public void draw(PGraphics pg, float x, float y) {
 		// For starter code just drawMarker(...)
 		if (!hidden) {

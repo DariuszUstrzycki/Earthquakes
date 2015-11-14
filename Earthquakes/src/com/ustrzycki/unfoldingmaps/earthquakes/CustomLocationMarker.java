@@ -30,11 +30,13 @@ public class CustomLocationMarker extends CommonMarker{
 	}
 	
 	// Getter method for clicked field
+	@Override
 	public boolean isClicked() {
 		return clicked;
 	}
 	
 	// Setter method for clicked field
+	@Override
 	public void setClicked(boolean state) {
 		clicked = state;
 	}
@@ -43,6 +45,7 @@ public class CustomLocationMarker extends CommonMarker{
 	// Note that you should implement this by making calls 
 	// drawMarker and showTitle, which are abstract methods 
 	// implemented in subclasses
+	@Override
 	public void draw(PGraphics pg, float x, float y) {
 		// For starter code just drawMarker(...)
 		if (!hidden) {
@@ -52,6 +55,7 @@ public class CustomLocationMarker extends CommonMarker{
 			}
 		}
 	}
+	@Override
 	public void drawMarker(PGraphics pg, float x, float y){
 		
 		// Save previous drawing style
@@ -66,6 +70,7 @@ public class CustomLocationMarker extends CommonMarker{
 				pg.popStyle();
 		
 	};
+	@Override
 	public void showTitle(PGraphics pg, float x, float y){
 		
 	};
