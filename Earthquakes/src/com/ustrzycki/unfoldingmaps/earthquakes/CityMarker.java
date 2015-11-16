@@ -3,6 +3,7 @@ package com.ustrzycki.unfoldingmaps.earthquakes;
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.geo.Location;
+import processing.core.PConstants;
 import processing.core.PGraphics;
 
 /** Implements a visual marker for cities on an earthquake map
@@ -31,6 +32,7 @@ public class CityMarker extends CommonMarker {
 	/**
 	 * Implementation of method to draw marker on the map.
 	 */
+	@Override
 	public void drawMarker(PGraphics pg, float x, float y) {
 		// Save previous drawing style
 		pg.pushStyle();
@@ -44,6 +46,7 @@ public class CityMarker extends CommonMarker {
 	}
 	
 	/** Show the title of the city if this marker is selected */
+	@Override
 	public void showTitle(PGraphics pg, float x, float y)
 	{
 		
@@ -54,7 +57,7 @@ public class CityMarker extends CommonMarker {
 		pg.rect(x, y + 20, length*7 - 10, 15);
 		
 		pg.fill(RED);
-		pg.textAlign(PGraphics.LEFT, PGraphics.CENTER);
+		pg.textAlign(PConstants.LEFT, PConstants.CENTER);
 		pg.textSize(12);
 		pg.text(s, x + 2, y + + 20 + 6);
 	}

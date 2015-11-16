@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.PointFeature;
+import processing.core.PConstants;
 import processing.core.PGraphics;
 
 /** Implements a visual marker for earthquakes on an earthquake map
@@ -62,7 +63,8 @@ public abstract class EarthquakeMarker extends CommonMarker implements Comparabl
 	}
 	
 	
-	 public int compareTo(EarthquakeMarker marker){
+	 @Override
+	public int compareTo(EarthquakeMarker marker){
 		 
 		 if (this.getMagnitude() < marker.getMagnitude())
 			 return -1;
@@ -117,7 +119,7 @@ public abstract class EarthquakeMarker extends CommonMarker implements Comparabl
 		pg.rect(x, y + 20, length*7 - 10, 15);
 		
 		pg.fill(RED);
-		pg.textAlign(PGraphics.LEFT, PGraphics.CENTER);
+		pg.textAlign(PConstants.LEFT, PConstants.CENTER);
 		pg.textSize(12);
 		pg.text(s, x + 2, y + 20 + 6);
 	}
